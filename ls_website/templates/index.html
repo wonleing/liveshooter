@@ -1,0 +1,12 @@
+{% extends "base.html" %} 
+
+{% block pagebody %}
+{% if login_id and login_user %}
+  <div style="width:100%; margin:0 auto; overflow:auto; _display:inline-block;"> 
+    <div style="width:50%; float:left;">{% include "feed.html" %}</div> 
+    <div style="width:50%; float:right;">{% include "recommand.html" %}</div> 
+  </div>
+{% else %}
+  {% include "recommand.html" %}
+{% endif %}
+{% endblock %}

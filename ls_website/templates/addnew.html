@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block pagebody %}
+{% ifequal login_id uid %}
+    <form action="{% url 'doadd' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Video description:</label>&emsp;<input type="text" name="videotitle" size=100 /></br>
+        <label>Choose your Video:</label>&emsp;<input type="file" name="videopath" /></br>
+        <label>Choose a category:</label>&emsp;<select size="1" name="category">
+          {% for ct in categorys %}
+            <option value="{{ ct.0 }}">{{ ct.1 }}</option>
+          {% endfor %}
+        </select>
+        <input type="hidden" name="userid" value="{{ uid }}" />
+        <p><input type="submit" value="Upload" /></p>
+    </form>
+{% else %}
+    <p>Please upload video in your own page.</p>
+{% endifequal %}
+{% endblock %}

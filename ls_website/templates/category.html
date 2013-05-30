@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block pagebody %}
+{% if cate_name %}
+    <h2>{{ cate_name }}</h4>
+{% else %}
+    <p>This category is not found.</p>
+{% endif %}
+{% if cate_videos %}
+    <ul>
+    {% for cv in cate_videos %}
+        <a href="{% url 'video' cv.0 %}">
+        <img src="{{ MEDIA_URL }}{{ cv.0 }}/{{ cv.0 }}.jpeg" height="120" width="160" /></a>
+        &emsp;Score:<b>{{ cv.3 }}</b>&emsp;Title:<i>{{ cv.1 }}</i>&emsp;Upload time:<i>{{ cv.4 }}</i>&emsp;Uploaded by:<i>{{ cv.8 }}</i></br>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No videos in this category yet.</p>
+{% endif %}
+{% endblock %}

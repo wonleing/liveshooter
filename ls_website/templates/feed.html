@@ -1,0 +1,40 @@
+{% if sns_friends %}
+    <h4>Your SNS friends in our site</h4>
+    {% for sf in sns_friends %}
+        <a href="{% url 'user' sf.0 %}">
+        <img src="{{ sf.3 }}" title="{{ sf.2 }}" height="42" width="42"/>{{ sf.2 }}</a></br>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You don't have any sns friends in our site yet. Invite them to join us!</p>
+{% endif %}
+
+{% if follow_users %}
+    <h4>Followed users</h4>
+    <ul>
+    {% for fu in follow_users %}
+        <a href="{% url 'user' fu.0 %}">
+        <img src="{{ fu.3 }}" title="{{ fu.2 }}" height="42" width="42"/>{{ fu.2 }}</a></br>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You haven't follow any user yet. Try following some popular user</p>
+{% endif %}
+
+{% if feed_videos %}
+    <h4>Followed and liked videos</h4>
+    <ul>
+    {% for fv in feed_videos %}
+      <div style="margin:0 auto; overflow:auto; _display:inline-block;"> 
+        <div style="width:160px; float:left;"><a href="{% url 'video' fv.0 %}">
+        <img src="{{ MEDIA_URL }}{{ fv.0 }}/{{ fv.0 }}.jpeg" height="120" width="160" /></a></div>
+        <div style="margin-top:30px; margin-left:170px;">
+        Liked: <b>{{ fv.3 }}</b><br/>Title: {{ fv.1 }}<br/>Upload time: {{ fv.4 }}<br/>
+        Category: <a href="{% url 'category' fv.5 %}">{{ fv.5 }}</a><br/>
+        Uploaded by: <a href="{% url 'user' fv.6 %}"><img src="{{ fv.9 }}" title="{{ fv.8 }}" height="24" width="24"/>{{ fv.8 }}</a></div> 
+      </div><br/>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No followed or liked videos yet. Try following some popular user or like some video.</p>
+{% endif %}
