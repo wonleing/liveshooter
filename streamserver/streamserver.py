@@ -51,7 +51,7 @@ class StreamServer:
         n.close()
         logger.info("html page for %s created" %videoid)
 
-    def _streaming(self, videoid, ext):
+    def _createVideo(self, videoid, ext):
         origfile = uploadpath + videoid + ext
         outname = httpdir + videoid + "/" + videoid
         exportname = exportdir + videoid + "/" + videoid
@@ -81,6 +81,9 @@ class StreamServer:
             self._createHtml(videoid, ".flv")
             os.system("ffmpeg -i %s -ss 1 -vframes 1 %s.jpeg > /dev/null 2>&1" %(origfile, outname))
             os.system("ffmpeg -i %s -b %dk -s %dx%d -r 20 -acodec copy %s > /dev/null 2>&1" %(origfile, vbit, width, height, infile))
+        thread.start_new_thread(self._streaming, (origfile, width, height, vbit, abit, outname, exportname))
+
+    def _streaming(origfile, width, height, vbit, abit, outname, exportname):
         os.system("vlc %s --sout='#transcode{width=%d,height=%d,vcodec=h264,vb=%d,fps=25,venc=x264{aud,profile=baseline,\
         level=30,keyint=30,ref=1},acodec=mp4a,ab=%d,deinterlace}:std{access=livehttp{seglen=%d,delsegs=true,numsegs=%d,index=%s.m3u8,\
         index-url=%s-########.ts},mux=ts{use-key-frames},dst=%s-########.ts}' vlc://quit -I dummy > /dev/null 2>&1;rm -rf %s" \
@@ -118,7 +121,7 @@ class StreamServer:
                 videoname = f
                 ext = f[8:]
         try:
-            thread.start_new_thread(self._streaming, (videoid, ext))
+            self._createVideo(videoid, ext)
         except:
             return False
         return exportdir + videoid
