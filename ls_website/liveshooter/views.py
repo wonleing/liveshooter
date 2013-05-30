@@ -17,15 +17,16 @@ def _check_login(request, context):
         request.session['access_token'] = ""
     if 'expires_in' not in request.session:
         request.session['expires_in'] = 0
+    if 'categorys' not in request.session:
+        request.session['categorys'] = s.getCategory(True)
     context['login_user'] = request.session['login_user']
     context['login_id'] = str(request.session['login_id'])
+    context['categorys'] = request.session['categorys']
 
 def index(request):
-    categorys = s.getCategory(True)
     recommand_users = s.getRecommandUser(True)
     recommand_videos = s.getRecommandVideo(True)
     context = {
-        'categorys': categorys,
         'recommand_users': recommand_users,
         'recommand_videos': recommand_videos,
     }
@@ -119,7 +120,6 @@ def following(request, userid):
 
 def addnew(request, userid):
     context = {
-        'categorys': s.getCategory(True),
         'uid': str(userid),
     }
     _check_login(request, context)
@@ -148,7 +148,7 @@ def doadd(request):
         try:
             ret = wb.post(msg, snapshot)
             s.shareVideo(videoid, ret.mid)
-            message = "</br>Video link posted on your weibo successfully"
+            message = "</br>Posted and link video on your weibo successfully"
         except:
             message = "</br>Failed to post on your weibo because of illegal words or snapshot doesnot exist"
         return HttpResponse('''<html><head><META HTTP-EQUIV="refresh" CONTENT="3;URL=user/%s"></head>
