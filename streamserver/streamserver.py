@@ -71,7 +71,8 @@ class StreamServer:
                 if abit > max_abit:
                     abit = max_abit
         logger.debug("video width: %d, height: %d, vbit: %d, abit: %d, ext: %s" %(width, height, vbit, abit, ext))
-        if ext in (".flv", ".webm", ".ogv", ".mp4"):
+        if ext in (".flv", ".webm", ".ogv"):
+            #jwplayer has problem on playing some mp4 file
             infile = outname + ext
             self._createHtml(videoid, ext)
             os.system("ffmpeg -i %s -ss 1 -vframes 1 %s.jpeg > /dev/null 2>&1" %(origfile, outname))
@@ -84,7 +85,8 @@ class StreamServer:
         thread.start_new_thread(self._streaming, (origfile, width, height, vbit, abit, outname, exportname))
 
     def _flashing(self, origfile, vbit, width, height, infile):
-        os.system("ffmpeg -i %s -b %dk -s %dx%d -r 25 -acodec copy %s > /dev/null 2>&1" %(origfile, vbit, width, height, infile))
+        os.system("ffmpeg -i %s -b %dk -s %dx%d -r 25 -vcodec libx264 -acodec aac -strict experimental -ab 96k %s > /dev/null 2>&1" \
+        %(origfile, vbit, width, height, infile))
 
     def _streaming(self, origfile, width, height, vbit, abit, outname, exportname):
         os.system("vlc %s --sout='#transcode{width=%d,height=%d,vcodec=h264,vb=%d,fps=25,venc=x264{aud,profile=baseline,\
