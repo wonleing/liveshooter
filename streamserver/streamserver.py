@@ -85,7 +85,7 @@ class StreamServer:
         thread.start_new_thread(self._streaming, (origfile, width, height, vbit, abit, outname, exportname))
 
     def _flashing(self, origfile, vbit, width, height, infile):
-        os.system("ffmpeg -i %s -b %dk -s %dx%d -r 25 -vcodec libx264 -acodec aac -strict experimental -ab 96k %s > /dev/null 2>&1" \
+        os.system("ffmpeg -i %s -ab 96 -ar 44100 -b %dk -s %dx%d -r 20 -vcodec libx264 %s > /dev/null 2>&1" \
         %(origfile, vbit, width, height, infile))
 
     def _streaming(self, origfile, width, height, vbit, abit, outname, exportname):
