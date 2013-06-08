@@ -27,7 +27,7 @@ if s.addTitle(userid, videoid, cateid, videotitle):
 else:
     print "Error: add video failed"
 
-ftp.storbinary('STOR %s' %videoid, open(vsample, 'rb'))
+ftp.storbinary('STOR %s.mp4' %videoid, open(vsample, 'rb'))
 url = s.finishUpload(videoid)
 print "Transcode completed, now you can watch %s" %url
 

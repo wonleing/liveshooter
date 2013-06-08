@@ -70,7 +70,7 @@ class StreamServer:
                 abit = int(k.split("=")[1])/1000
                 if abit > max_abit:
                     abit = max_abit
-        logger.debug("video width: %d, height: %d, vbit: %d, abit: %d" %(width, height, vbit, abit))
+        logger.debug("video width: %d, height: %d, vbit: %d, abit: %d, ext: %s" %(width, height, vbit, abit, ext))
         if ext in (".flv", ".webm", ".ogv", ".mp4"):
             infile = outname + ext
             self._createHtml(videoid, ext)
@@ -80,10 +80,13 @@ class StreamServer:
             infile = outname + ".flv"
             self._createHtml(videoid, ".flv")
             os.system("ffmpeg -i %s -ss 1 -vframes 1 %s.jpeg > /dev/null 2>&1" %(origfile, outname))
-            os.system("ffmpeg -i %s -b %dk -s %dx%d -r 20 -acodec copy %s > /dev/null 2>&1" %(origfile, vbit, width, height, infile))
+            thread.start_new_thread(self._flashing, (origfile, vbit, width, height, infile))
         thread.start_new_thread(self._streaming, (origfile, width, height, vbit, abit, outname, exportname))
 
-    def _streaming(origfile, width, height, vbit, abit, outname, exportname):
+    def _flashing(self, origfile, vbit, width, height, infile):
+        os.system("ffmpeg -i %s -b %dk -s %dx%d -r 25 -acodec copy %s > /dev/null 2>&1" %(origfile, vbit, width, height, infile))
+
+    def _streaming(self, origfile, width, height, vbit, abit, outname, exportname):
         os.system("vlc %s --sout='#transcode{width=%d,height=%d,vcodec=h264,vb=%d,fps=25,venc=x264{aud,profile=baseline,\
         level=30,keyint=30,ref=1},acodec=mp4a,ab=%d,deinterlace}:std{access=livehttp{seglen=%d,delsegs=true,numsegs=%d,index=%s.m3u8,\
         index-url=%s-########.ts},mux=ts{use-key-frames},dst=%s-########.ts}' vlc://quit -I dummy > /dev/null 2>&1;rm -rf %s" \
