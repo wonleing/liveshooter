@@ -44,11 +44,16 @@ class StreamServer:
 
     def _createHtml(self, videoid, ext):
         t = open("template.html", "r")
+        t1 = open("template1.html", "r")
         os.mkdir(httpdir+videoid)
         n = open(httpdir+videoid+"/index.html", "w")
+        p = open(httpdir+videoid+"/play.html", "w")
         n.write(t.read().replace("BURL", exportdir).replace("VIDEOID", videoid))
+        p.write(t1.read().replace("BURL", exportdir).replace("VIDEOID", videoid))
         t.close()
+        t1.close()
         n.close()
+        p.close()
         logger.info("html page for %s created" %videoid)
 
     def _createVideo(self, videoid, ext):
@@ -286,6 +291,13 @@ class StreamServer:
         if nojson:
             return ret
         return json.dumps(ret)
+
+    def integrateVideo(self, soundlink):
+        os.system("wget %s -O /tmp/tmp.mp3 > /dev/null 2>&1" %soundlink)
+        fn = self.genFilename()
+        os.system("ffmpeg -i /tmp/nosound.mp4 -i /tmp/tmp.mp3 -vcodec copy -acodec copy %s/%s.flv > /dev/null 2>&1" %(uploadpath,fn))
+        self._createVideo(fn, ".flv")
+        return exportdir + fn + "/play.html"
 
 
 # Run the server's main loop
