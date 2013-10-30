@@ -293,9 +293,12 @@ class StreamServer:
         return json.dumps(ret)
 
     def integrateVideo(self, soundlink):
-        os.system("wget %s -O /tmp/tmp.mp3 > /dev/null 2>&1" %soundlink)
+        m = urllib2.urlopen(soundlink)
+        f = open("/tmp/tmp.mp3", "w")
+        f.write(m.read())
+        f.close()
         fn = self.genFilename()
-        os.system("ffmpeg -i /tmp/nosound.mp4 -i /tmp/tmp.mp3 -vcodec copy -acodec copy %s/%s.flv > /dev/null 2>&1" %(uploadpath,fn))
+        os.system("ffmpeg -i /tmp/nosound.mp4 -i /tmp/tmp.mp3 -vcodec copy -acodec libvo_aacenc -ab 64 %s/%s.flv > /dev/null 2>&1" %(uploadpath,fn))
         self._createVideo(fn, ".flv")
         return exportdir + fn + "/play.html"
 
